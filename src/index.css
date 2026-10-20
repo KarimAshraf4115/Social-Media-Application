@@ -1,0 +1,76 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=DM+Sans:wght@400;500;700&display=swap");
+@import 'tailwindcss';
+
+/* Moss & clay — single source of truth for the whole app.
+   Components use names (bg-surface, text-clay), never raw hex. */
+/* stylelint-disable-next-line at-rule-no-unknown -- Tailwind CSS v4 theme directive */
+@theme {
+  --font-display: "Fraunces", serif;
+  --font-sans: "DM Sans", sans-serif;
+
+  --color-canvas: #1c211c;
+  /* page background */
+  --color-surface: #262d25;
+  /* cards, panels */
+  --color-raised: #2e362d;
+  /* inputs, chips */
+  --color-line: #38413a;
+  /* borders, dividers */
+  --color-ink: #e9e4d4;
+  /* main text */
+  --color-mute: #8e9a86;
+  /* secondary text */
+  --color-clay: #d9825b;
+  /* primary accent */
+  --color-clay-hover: #c9714a;
+  --color-sage: #9db38a;
+  /* secondary accent */
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+.Toastify {
+  --toastify-font-family: var(--font-sans);
+  --toastify-color-dark: var(--color-surface);
+  --toastify-text-color-dark: var(--color-ink);
+  --toastify-toast-bd-radius: 1rem;
+  --toastify-toast-min-height: 64px;
+  --toastify-color-progress-success: var(--color-sage);
+  --toastify-color-progress-error: var(--color-clay);
+  --toastify-color-progress-warning: var(--color-clay);
+  --toastify-color-progress-info: var(--color-mute);
+}
+
+.Toastify__toast {
+  border: 1px solid var(--color-line);
+  padding: 12px 14px;
+  font-size: 0.875rem;
+  box-shadow: none;
+  gap : 8px
+}
+
+.Toastify__toast-body {
+  gap: 12px;
+  padding: 0;
+}
+
+.Toastify__close-button {
+  color: var(--color-mute);
+  opacity: 1;
+}
+
+.Toastify__close-button:hover {
+  color: var(--color-ink);
+}
+
+.Toastify__progress-bar {
+  height: 3px;
+}
+
+.navbar-link.active {
+  @apply bg-clay/10 text-clay;
+}
