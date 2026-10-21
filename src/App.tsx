@@ -8,7 +8,10 @@ import NotFound from "./pages/NotFound/NotFound";
 import AppToaster from "./AppToaster/AppToaster";
 import AuthContextProvider from "./context/AuthContextProvider";
 import Protected from "./components/ProtectedRoutes/Protected";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import PostDetails from "./pages/PostDetails/PostDetails";
 
+const queryClient = new QueryClient();
 const routes = createBrowserRouter([
   {
     path: "",
@@ -42,6 +45,14 @@ const routes = createBrowserRouter([
           </Protected>
         ),
       },
+      {
+        path: "postDetails",
+        element: (
+          <Protected>
+            <PostDetails />
+          </Protected>
+        ),
+      },
       { path: "*", element: <NotFound /> },
     ],
   },
@@ -51,9 +62,11 @@ export default function App() {
   return (
     <>
       <AppToaster />
-      <AuthContextProvider>
-        <RouterProvider router={routes}></RouterProvider>
-      </AuthContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthContextProvider>
+          <RouterProvider router={routes}></RouterProvider>
+        </AuthContextProvider>
+      </QueryClientProvider>
     </>
   );
 }

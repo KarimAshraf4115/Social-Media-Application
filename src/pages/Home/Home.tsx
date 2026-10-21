@@ -1,38 +1,30 @@
 import { FiImage } from "react-icons/fi";
-import Post from "../../components/Post/Post"; 
+import Post from "../../components/Post/Post";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import type { PostType } from "../../types/Post.Type";
 import HomeSkeleton from "./HomeSkeleton";
 import HomeError from "./HomError";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Home() {
-  const [allPosts, setAllPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
   function getAllPosts() {
-    axios
-      .get("https://route-posts.routemisr.com/posts", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        },
-      })
-      .then((res) => {
-        console.log(res.data.data.posts);
-        setAllPosts(res.data.data.posts);
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsError(true);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    return axios.get("https://route-posts.routemisr.com/posts", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+      },
+    });
   }
-
-  useEffect(() => {
-    getAllPosts();
-  }, []);
+  const {data , isLoading , isError} = useQuery({
+    queryKey: ["getAllPosts"],
+    queryFn: getAllPosts,
+    retry : 3,
+    retryDelay : 2000,
+    // staleTime : 1000,
+    // refetchInterval : 1000,
+    // gcTime : 1000,
+    // enabled : true
+  }); 
 
   if (isLoading) {
     return (
@@ -52,8 +44,6 @@ export default function Home() {
             title="The feed wandered off"
             message="We couldn't load your posts. Check your connection and try again."
             onRetry={() => {
-              setIsLoading(true);
-              setIsError(false);
               getAllPosts();
             }}
           />
@@ -88,7 +78,7 @@ export default function Home() {
         {/* Feed */}
         {isLoading
           ? "Loading..."
-          : allPosts.map((post: PostType) => (
+          : data?.data.data.posts.map((post: PostType) => (
               <Post post={post} key={post.id} />
             ))}
       </div>

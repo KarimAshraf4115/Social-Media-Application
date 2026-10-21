@@ -94,9 +94,11 @@ export default function Post({ post }: { post: PostType }) {
         <button type="button" className={`${actionBase} ${actionIdle}`}>
           <FiHeart className="size-4.5" /> {likesCount}
         </button>
-        <button type="button" className={`${actionBase} ${actionIdle}`}>
-          <FiMessageCircle className="size-4.5" /> {commentsCount}
-        </button>
+        <Link to="/postDetails">
+          <div className={`${actionBase} ${actionIdle}`}>
+            <FiMessageCircle className="size-4.5" /> {commentsCount}
+          </div>
+        </Link>
         <button type="button" className={`${actionBase} ${actionIdle}`}>
           <FiShare2 className="size-4.5" /> Share
         </button>
