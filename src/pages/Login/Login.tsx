@@ -13,6 +13,7 @@ import { useContext, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../context/AuthContext";
+import { Helmet } from "react-helmet";
 
 export default function Login() {
   const form = useForm<LoginSchemaType>({
@@ -54,6 +55,9 @@ export default function Login() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
+      <Helmet> 
+        <title>login</title>
+      </Helmet>
       <aside className="relative hidden overflow-hidden border-r border-line bg-surface lg:flex lg:flex-col lg:justify-between lg:p-14">
         <div className="pointer-events-none absolute -bottom-28 -right-28 size-96 rounded-full bg-clay/15" />
         <div className="pointer-events-none absolute -top-20 -left-20 size-72 rounded-full bg-sage/10" />

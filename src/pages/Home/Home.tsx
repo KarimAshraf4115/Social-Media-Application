@@ -1,11 +1,11 @@
-import { FiImage } from "react-icons/fi";
-import Post from "../../components/Post/Post";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import type { PostType } from "../../types/Post.Type";
-import HomeSkeleton from "./HomeSkeleton";
-import HomeError from "./HomError";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import Post from "../../components/Post/Post";
+import PostCreation from "../../components/Post/PostCreation";
+import type { PostType } from "../../types/Post.Type";
+import HomeError from "./HomeError";
+import HomeSkeleton from "./HomeSkeleton";
+import { Helmet } from "react-helmet";
 
 export default function Home() {
   function getAllPosts() {
@@ -15,20 +15,23 @@ export default function Home() {
       },
     });
   }
-  const {data , isLoading , isError} = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["getAllPosts"],
     queryFn: getAllPosts,
-    retry : 3,
-    retryDelay : 2000,
+    retry: 3,
+    retryDelay: 2000,
     // staleTime : 1000,
     // refetchInterval : 1000,
     // gcTime : 1000,
     // enabled : true
-  }); 
+  });
 
   if (isLoading) {
     return (
       <>
+        <Helmet>
+          <title>Loading...</title>
+        </Helmet>
         <main className="mx-auto w-full max-w-200 px-4 py-6 sm:px-6 sm:py-8">
           <HomeSkeleton />
         </main>
@@ -39,6 +42,9 @@ export default function Home() {
   if (isError) {
     return (
       <>
+        <Helmet>
+          <title>Error</title>
+        </Helmet>
         <main className="mx-auto w-full max-w-200 px-4 py-6 sm:px-6 sm:py-8">
           <HomeError
             title="The feed wandered off"
@@ -53,35 +59,22 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-200 px-4 py-6 sm:px-6 sm:py-8">
-      <div className="flex flex-col gap-4">
-        {/* Composer */}
-        <div className="flex items-center gap-3 rounded-3xl border border-line bg-surface p-4">
-          <div className="grid size-10 shrink-0 place-items-center rounded-full bg-sage font-medium text-canvas">
-            U
-          </div>
-          <button
-            type="button"
-            className="min-w-0 flex-1 truncate rounded-2xl border border-line bg-raised px-4 py-3 text-left text-sm text-mute transition hover:border-mute focus:outline-none focus:ring-4 focus:ring-clay/15"
-          >
-            What's on your mind?
-          </button>
-          <button
-            type="button"
-            aria-label="Add photo"
-            className="grid size-10 shrink-0 place-items-center rounded-full text-sage transition hover:bg-raised"
-          >
-            <FiImage className="size-5" />
-          </button>
-        </div>
+    <>
+      <Helmet>
+        <title>Home</title>
+      </Helmet>
+      <main className="mx-auto w-full max-w-200 px-4 py-6 sm:px-6 sm:py-8">
+        <div className="flex flex-col gap-4">
+          <PostCreation />
 
-        {/* Feed */}
-        {isLoading
-          ? "Loading..."
-          : data?.data.data.posts.map((post: PostType) => (
-              <Post post={post} key={post.id} />
-            ))}
-      </div>
-    </main>
+          {/* Feed */}
+          {isLoading
+            ? "Loading..."
+            : data?.data.data.posts.map((post: PostType) => (
+                <Post post={post} key={post.id} refetchFn={["getAllPosts"]} />
+              ))}
+        </div>
+      </main>
+    </>
   );
 }

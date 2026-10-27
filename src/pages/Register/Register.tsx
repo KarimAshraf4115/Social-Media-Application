@@ -19,6 +19,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Helmet } from "react-helmet";
 
 export default function Register() {
   const form = useForm<RegisterSchemaType>({
@@ -44,7 +45,7 @@ export default function Register() {
       .post(`https://route-posts.routemisr.com/users/signup`, obj)
       .then((res) => {
         toast.success(res.data.message);
-        navigate('/login') // programatic navigate
+        navigate("/login"); // programatic navigate
       })
       .catch((err) => {
         toast.error(err.response.data.message);
@@ -57,6 +58,9 @@ export default function Register() {
   // register => name , ref (unconrolled) , onBlur , onChange
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
+      <Helmet>
+        <title>register</title>
+      </Helmet>
       <aside className="relative hidden overflow-hidden border-r border-line bg-surface lg:flex lg:flex-col lg:justify-between lg:p-14">
         <div className="pointer-events-none absolute -bottom-28 -right-28 size-96 rounded-full bg-clay/15" />
         <div className="pointer-events-none absolute -top-20 -left-20 size-72 rounded-full bg-sage/10" />

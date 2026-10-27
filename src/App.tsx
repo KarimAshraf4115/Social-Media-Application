@@ -10,7 +10,8 @@ import AuthContextProvider from "./context/AuthContextProvider";
 import Protected from "./components/ProtectedRoutes/Protected";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import PostDetails from "./pages/PostDetails/PostDetails";
-
+import useNetworkState from "./../node_modules/react-use/esm/useNetworkState";
+import Offline from "./Offline/Offline";
 const queryClient = new QueryClient();
 const routes = createBrowserRouter([
   {
@@ -46,7 +47,7 @@ const routes = createBrowserRouter([
         ),
       },
       {
-        path: "postDetails",
+        path: "postDetails/:id",
         element: (
           <Protected>
             <PostDetails />
@@ -59,6 +60,10 @@ const routes = createBrowserRouter([
 ]);
 
 export default function App() {
+  const networkState = useNetworkState();
+  if (!networkState.online) {
+    return <Offline />;
+  }
   return (
     <>
       <AppToaster />
