@@ -75,7 +75,7 @@ export default function Post({
                 <FiMoreHorizontal className="size-5" />
               </button>
               <div
-                className={`${menuOpen ? `` : `hidden`} absolute right-0 top-full z-10 mt-2 w-48 translate-y-1 rounded-2xl border border-line bg-canvas p-2 opacity-0 transition group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100`}
+                className={`${menuOpen ? `` : `hidden`} absolute right-0 top-full z-10 mt-2 w-48 translate-y-1 rounded-2xl border border-line bg-canvas p-2 transition `}
               >
                 <button type="button" className={menuItem}>
                   <FiEdit2 className="text-mute" /> Edit post

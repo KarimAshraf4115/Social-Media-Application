@@ -25,11 +25,11 @@ const menuItem =
 export default function Navbar() {
   const [isMobOn, setisMobOn] = useState(false);
   const { userLoggedIn, setUserLoggedIn } = useContext(AuthContext);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   function Logout() {
-    localStorage.removeItem("userToken")
-    setUserLoggedIn(null)
-    navigate('/login')
+    localStorage.removeItem("userToken");
+    setUserLoggedIn(null);
+    navigate("/login");
   }
 
   return (
@@ -71,23 +71,39 @@ export default function Navbar() {
             {userLoggedIn ? (
               <>
                 {" "}
-                <NavLink to="/" end className="navbar-link flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium transition text-mute hover:bg-raised hover:text-ink">
+                <NavLink
+                  to="/"
+                  end
+                  className="navbar-link flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium transition text-mute hover:bg-raised hover:text-ink"
+                >
                   <FiHome /> Home
                 </NavLink>
-                <NavLink to="/profile" className="navbar-link flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium transition text-mute hover:bg-raised hover:text-ink">
+                <NavLink
+                  to="/profile"
+                  className="navbar-link flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium transition text-mute hover:bg-raised hover:text-ink"
+                >
                   <FiUser /> Profile
                 </NavLink>
-                <button onClick={() => Logout()} className={`${linkBase} ${linkIdle}`}>
+                <button
+                  onClick={() => Logout()}
+                  className={`${linkBase} ${linkIdle}`}
+                >
                   <FiUser /> Logout
                 </button>
               </>
             ) : (
               <>
                 {" "}
-                <NavLink to="/register"  className={`navbar-link ${linkBase} ${linkIdle}`}>
+                <NavLink
+                  to="/register"
+                  className={`navbar-link ${linkBase} ${linkIdle}`}
+                >
                   <FiUser /> Register
                 </NavLink>
-                <NavLink to="/login"  className={`navbar-link ${linkBase} ${linkIdle}`}>
+                <NavLink
+                  to="/login"
+                  className={`navbar-link ${linkBase} ${linkIdle}`}
+                >
                   <FiUser /> Login
                 </NavLink>
               </>
@@ -137,7 +153,7 @@ export default function Navbar() {
                         <FiKey className="text-mute" /> Change password
                       </Link>
                       <div className="my-2 h-px bg-line" />
-                      <button type="button" className={`${menuItem} text-clay`}>
+                      <button onClick={() => Logout()} type="button" className={`${menuItem} text-clay`}>
                         <FiLogOut /> Log out
                       </button>
                     </div>
@@ -166,7 +182,9 @@ export default function Navbar() {
 
         {/* Mobile panel */}
         {isMobOn ? (
-          <div className="absolute inset-x-0 top-full hidden border-b border-line bg-surface p-4 peer-checked:block lg:hidden">
+          <div
+            className={`absolute inset-x-0 top-full border-b border-line bg-surface p-4 ${isMobOn ? "block" : ""} lg:hidden`}
+          >
             {userLoggedIn ? (
               <>
                 <div className="relative mb-3">
@@ -186,13 +204,23 @@ export default function Navbar() {
               {userLoggedIn ? (
                 <>
                   {" "}
-                  <NavLink to="/" end className={`navbar-link ${linkBase} ${linkActive}`}>
+                  <NavLink
+                    to="/"
+                    end
+                    className={`navbar-link ${linkBase} ${linkActive}`}
+                  >
                     <FiHome /> Home
                   </NavLink>
-                  <NavLink to="/profile" className={`navbar-link ${linkBase} ${linkIdle}`}>
+                  <NavLink
+                    to="/profile"
+                    className={`navbar-link ${linkBase} ${linkIdle}`}
+                  >
                     <FiUser /> Profile
                   </NavLink>
-                  <button onClick={() => Logout()} className={`${linkBase} ${linkIdle}`}>
+                  <button
+                    onClick={() => Logout()}
+                    className={`${linkBase} ${linkIdle}`}
+                  >
                     <FiUser /> Logout
                   </button>
                 </>
