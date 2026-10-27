@@ -5,11 +5,10 @@ import { FiImage, FiLoader, FiSend, FiX } from "react-icons/fi";
 import { toast } from "react-toastify";
 export default function PostCreation() {
   const [previewUrl, setPreviewUrl] = useState(""); // Replace with actual preview URL if an image is selected
-  const bodyInput = useRef(null);
-  const imageInput = useRef(null);
+  const bodyInput = useRef<HTMLTextAreaElement>(null);
+  const imageInput = useRef<HTMLInputElement>(null);
   const query = useQueryClient();
-  const formData = new FormData();
-  function createPost() {
+  function createPost(formData: FormData) {
     return axios.post(`https://route-posts.routemisr.com/posts`, formData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("userToken")}`,
@@ -18,8 +17,8 @@ export default function PostCreation() {
   }
 
   function clearInputs() {
-    bodyInput.current.value = "";
-    imageInput.current.value = "";
+    if (bodyInput.current) bodyInput.current.value = "";
+    if (imageInput.current) imageInput.current.value = "";
     setPreviewUrl("");
   }
 
@@ -41,21 +40,24 @@ export default function PostCreation() {
   });
 
   function handlePostCreation() {
-    if (!bodyInput.current.value && !imageInput.current.files[0]) return;
-    if (imageInput.current.files[0]) {
+    const formData = new FormData();
+
+    if (!bodyInput.current?.value && !imageInput.current?.files?.[0]) return;
+    if (imageInput.current?.files?.[0]) {
       formData.append("image", imageInput.current.files[0]);
     }
-    if (bodyInput.current.value) {
-      formData.append("body", bodyInput.current.value);
+    if (bodyInput.current?.value) {
+      formData.append("body", bodyInput.current?.value);
     }
 
-    mutate();
+    mutate(formData);
   }
 
-  function handleImagePreview(e) {
-    console.log(e?.target?.files[0]);
-    const path = URL.createObjectURL(e?.target?.files[0]);
-    setPreviewUrl(path);
+  function handleImagePreview(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(URL.createObjectURL(file));
   }
 
   return (
@@ -83,7 +85,10 @@ export default function PostCreation() {
           />
           <button
             type="button"
-            onClick={() => setPreviewUrl("")}
+            onClick={() => {
+              if (imageInput.current) imageInput.current.value = "";
+              setPreviewUrl("");
+            }}
             aria-label="Remove image"
             className="absolute right-2 top-2 grid size-8 place-items-center rounded-full bg-canvas/80 text-ink transition hover:bg-canvas"
           >
@@ -108,7 +113,7 @@ export default function PostCreation() {
 
         <button
           disabled={isPending}
-          type="submit"
+          type="button"
           onClick={() => handlePostCreation()}
           className="flex items-center gap-2 rounded-2xl bg-clay px-5 py-2 text-sm font-medium text-canvas transition hover:bg-clay-hover disabled:cursor-wait disabled:bg-clay/70"
         >
