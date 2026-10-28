@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { AuthContext } from "./AuthContext";
 import { jwtDecode } from "jwt-decode";
+import { useMemo, useState } from "react";
+import { AuthContext } from "./AuthContext";
 
 export default function AuthContextProvider({
   children,
@@ -11,17 +11,13 @@ export default function AuthContextProvider({
     localStorage.getItem("userToken"),
   ); // lazy initialization (don't call the function in every rerender)
 
-  const [userId , setUserId] = useState("");
-  useEffect(() => {
-    const { user }: { user: string } = jwtDecode(
-      localStorage.getItem("userToken"),
-    );
-    setUserId(user);
-  }, [userLoggedIn]);
-
+  const userId = useMemo(
+    () => (userLoggedIn ? jwtDecode<{ user: string }>(userLoggedIn).user : ""),
+    [userLoggedIn],
+  );
 
   return (
-    <AuthContext.Provider value={{ userLoggedIn, setUserLoggedIn , userId }}>
+    <AuthContext.Provider value={{ userLoggedIn, setUserLoggedIn, userId }}>
       {children}
     </AuthContext.Provider>
   );

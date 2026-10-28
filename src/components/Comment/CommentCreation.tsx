@@ -1,7 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiImage, FiLoader, FiSend, FiX } from "react-icons/fi";
+import { toast } from "react-toastify";
+type CommentForm = { content: string; image: FileList };
 
 export default function CommentCreation({
   postId,
@@ -10,20 +13,19 @@ export default function CommentCreation({
   postId: string;
   refetchFn?: string[];
 }) {
-  const previewUrl = null; // Replace with actual preview URL if an image is selected
+  const [previewUrl, setPreviewUrl] = useState(""); // Replace with actual preview URL if an image is selected
 
-  const form = useForm({
+  const form = useForm<CommentForm>({
     defaultValues: {
       content: "",
-      image: "",
     },
   });
 
   const query = useQueryClient();
 
-  const { register, handleSubmit, reset } = form;
-  const formData = new FormData();
-  function createComment() {
+  const { register, handleSubmit, reset, resetField } = form;
+  const { onChange: imageOnChange, ...imageField } = register("image");
+  function createComment(formData: FormData) {
     return axios.post(
       `https://route-posts.routemisr.com/posts/${postId}/comments`,
       formData,
@@ -41,27 +43,42 @@ export default function CommentCreation({
       console.log(data);
       query.invalidateQueries({ queryKey: refetchFn });
       reset();
+      clearImage();
+      toast.success(data.data.message);
     },
     onError: (error) => {
       console.log(error);
+      toast.error("Failed to create comment. Please try again.");
     },
     onSettled: () => {
       console.log("Comment creation request completed");
     },
   });
-  
-  function handleCommentCreation(data: { content: string; image: string }) {
-    console.log(data);
-    if (data.content === "" && data.image === "") return;
-    if (data.image) {
-      formData.append("image", data.image[0]);
-    }
-    if (data.content) {
-      formData.append("content", data.content);
-    }
 
-    mutate();
+  function handleCommentCreation({ content, image }: CommentForm) {
+    const file = image?.[0];
+    const text = content.trim();
+    if (!text && !file) return;
+
+    const formData = new FormData();
+    if (file) formData.append("image", file);
+    if (text) formData.append("content", text);
+    mutate(formData);
   }
+
+  function handleImagePreview(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(URL.createObjectURL(file));
+  }
+
+  function clearImage() {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl("");
+    resetField("image"); // clears the form value and the file input
+  }
+
   return (
     <>
       <form
@@ -81,6 +98,9 @@ export default function CommentCreation({
                   src={previewUrl}
                   alt="Selected"
                   className="size-full rounded-xl border border-line object-cover"
+                  onClick={() => {
+                    clearImage();
+                  }}
                 />
                 <button
                   type="button"
@@ -107,10 +127,14 @@ export default function CommentCreation({
             >
               <FiImage className="size-5" />
               <input
-                {...register("image")}
+                {...imageField}
                 type="file"
                 accept="image/*"
                 className="sr-only"
+                onChange={(e) => {
+                  imageOnChange(e);
+                  handleImagePreview(e);
+                }}
               />
             </label>
 

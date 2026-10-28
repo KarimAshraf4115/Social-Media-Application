@@ -77,7 +77,7 @@ export default function PostDetails() {
     queryFn: getPostLikes,
   });
 
-  if (detailsLoading && commentsLoading && likesLoading) {
+  if (detailsLoading || commentsLoading || likesLoading) {
     return <PostDetailsSkeleton />;
   }
 
