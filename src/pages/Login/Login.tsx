@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../Context/AuthContext";
 import { Helmet } from "react-helmet";
 
 export default function Login() {
@@ -28,7 +28,7 @@ export default function Login() {
   });
 
   const [isLoading, setisLoading] = useState(false);
-  const { userLoggedIn, setUserLoggedIn } = useContext(AuthContext)
+  const { userLoggedIn, setUserLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
   function handleLogin(obj: LoginSchemaType) {
@@ -38,9 +38,9 @@ export default function Login() {
       .post(`https://route-posts.routemisr.com/users/signin`, obj)
       .then((res) => {
         toast.success(res.data.message);
-        console.log(res.data.data.token)
-        localStorage.setItem("userToken" , res.data.data.token)
-        setUserLoggedIn(res.data.data.token)
+        console.log(res.data.data.token);
+        localStorage.setItem("userToken", res.data.data.token);
+        setUserLoggedIn(res.data.data.token);
         navigate("/"); // programatic navigate
       })
       .catch((err) => {
@@ -55,7 +55,7 @@ export default function Login() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <Helmet> 
+      <Helmet>
         <title>login</title>
       </Helmet>
       <aside className="relative hidden overflow-hidden border-r border-line bg-surface lg:flex lg:flex-col lg:justify-between lg:p-14">
@@ -160,7 +160,10 @@ export default function Login() {
                 Password
               </label>
             </div>
-            <p className="px-1 text-xs text-clay" style={{ whiteSpace: "pre-line" }}>
+            <p
+              className="px-1 text-xs text-clay"
+              style={{ whiteSpace: "pre-line" }}
+            >
               {formState.errors.password?.message}
             </p>
 

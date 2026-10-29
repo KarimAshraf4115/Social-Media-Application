@@ -1,24 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { Helmet } from "react-helmet";
 import {
   FiArrowLeft,
   FiChevronRight,
   FiHeart,
   FiMessageCircle,
-  FiMoreHorizontal,
   FiShare2,
 } from "react-icons/fi";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import CommentCreation from "../../components/Comment/CommentCreation";
-import { type LikesUserType } from "../../types/LikesUserType.type";
+import OptionsMenu from "../../components/OptionsMenu/OptionsMenu";
+import { AuthContext } from "../../Context/AuthContext";
+import useDeletePost from "../../Hooks/useDeletePost";
+import { type CommentType } from "../../Types/Comment.Type";
+import { type LikesUserType } from "../../Types/LikesUserType.type";
 import { createdAtFormater } from "../../Utilities/utility";
 import Comment from "./../../components/Comment/Comment";
-import { type CommentType } from "./../../types/Comment.Type";
+import CommentsEmpty from "./CommentsEmpty";
 import LikesDialog from "./LikesDialog";
 import PostDetailsError from "./PostDetailsError";
 import PostDetailsSkeleton from "./PostDetailsSkeleton";
-import { Helmet } from "react-helmet";
+import EditPostDialog from "../../components/Post/EditingPostModal";
 
 const actionBase =
   "flex items-center justify-center gap-2 rounded-2xl py-2 text-sm font-medium transition";
@@ -26,7 +30,11 @@ const actionIdle = "text-mute hover:bg-raised hover:text-ink";
 
 export default function PostDetails() {
   const { id } = useParams();
+  const { userId } = useContext(AuthContext);
+  const [editOpen, setEditOpen] = useState(false);
+  const { mutate: deletePost, isPending } = useDeletePost();
   const [likesOpen, setLikesOpen] = useState(false);
+  const navigate = useNavigate();
   // post details
   function getPostDetails() {
     return axios.get(`https://route-posts.routemisr.com/posts/${id}`, {
@@ -54,6 +62,7 @@ export default function PostDetails() {
     data: detailsData,
     isLoading: detailsLoading,
     isError: detailsError,
+    refetch: refetchDetails,
   } = useQuery({
     queryKey: ["getPostDetails", id],
     queryFn: getPostDetails,
@@ -63,6 +72,7 @@ export default function PostDetails() {
     data: commentsData,
     isLoading: commentsLoading,
     isError: commentsError,
+    refetch: refetchComments,
   } = useQuery({
     queryKey: ["getPostComments", id],
     queryFn: getPostComments,
@@ -72,6 +82,7 @@ export default function PostDetails() {
     data: likesData,
     isLoading: likesLoading,
     isError: likesError,
+    refetch: refetchLikes,
   } = useQuery({
     queryKey: ["getPostLikes", id],
     queryFn: getPostLikes,
@@ -82,9 +93,18 @@ export default function PostDetails() {
   }
 
   if (detailsError || commentsError || likesError) {
-    return <PostDetailsError onRetry={getPostDetails} />;
+    return (
+      <PostDetailsError
+        onRetry={() => {
+          refetchComments();
+          refetchDetails();
+          refetchLikes();
+        }}
+      />
+    );
   }
 
+  const post = detailsData!.data.data.post;
   const {
     body,
     createdAt,
@@ -93,7 +113,7 @@ export default function PostDetails() {
     likesCount,
     sharesCount,
     user,
-  } = detailsData!.data.data.post;
+  } = post;
 
   // console.log(commentsData?.data.data.comments);
   console.log(likesData?.data.data.likes);
@@ -104,7 +124,7 @@ export default function PostDetails() {
         <title>Post Details</title>
       </Helmet>
       <article
-        className={`grid overflow-hidden rounded-3xl border border-line bg-surface lg:max-h-[calc(100vh-8rem)] lg:grid-rows-[minmax(0,1fr)] ${
+        className={`grid overflow-hidden rounded-3xl border border-line bg-surface lg:h-[max(32rem,calc(100vh-8rem))] lg:grid-rows-[minmax(0,1fr)] ${
           image ? "lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]" : ""
         }`}
       >
@@ -133,26 +153,46 @@ export default function PostDetails() {
           }`}
         >
           {/* Author */}
-          <header className="flex items-center gap-3 px-4 pb-2 pt-4 sm:px-5">
-            <img
-              src={user.photo}
-              className="grid size-10 shrink-0 place-items-center rounded-full bg-sage font-medium text-canvas"
-            />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-ink">
-                {user.name}
-              </p>
-              <p className="text-xs text-mute">
-                {createdAtFormater(createdAt)}
-              </p>
+          <header className="flex items-center gap-3 px-4 pb-2 pt-4 sm:px-5 justify-between">
+            <div className="flex gap-3 items-center ">
+              <img
+                src={user.photo}
+                className="grid size-10 shrink-0 place-items-center rounded-full bg-sage font-medium text-canvas"
+              />
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-ink">
+                  {user.name}
+                </p>
+                <p className="text-xs text-mute">
+                  {createdAtFormater(createdAt)}
+                </p>
+              </div>
             </div>
-            <button
+            {/* <button
               type="button"
               aria-label="Post options"
               className="ml-auto grid size-9 shrink-0 place-items-center rounded-full text-mute transition hover:bg-raised hover:text-ink"
             >
               <FiMoreHorizontal className="size-5" />
-            </button>
+            </button> */}
+
+            {userId === user._id && (
+              <>
+                <OptionsMenu
+                  ariaLabel="Post options"
+                  editLabel="Edit post"
+                  deleteLabel="Delete post"
+                  isDeleting={isPending}
+                  onEdit={() => setEditOpen(true)}
+                  onDelete={() =>
+                    deletePost(
+                      { postId: id! },
+                      { onSuccess: () => navigate("/") },
+                    )
+                  }
+                />
+              </>
+            )}
           </header>
 
           {/* Caption */}
@@ -206,10 +246,18 @@ export default function PostDetails() {
           </div>
 
           {/* Comments — the only part that scrolls on desktop */}
-          <div className="min-h-0 flex-1 space-y-4 border-t border-line p-4 scheme-dark sm:px-5 lg:overflow-y-auto">
-            {commentsData?.data.data.comments.map((comment: CommentType) => (
-              <Comment comment={comment} key={comment._id} />
-            ))}
+          <div className="min-h-0 flex-1 max-h-80 overflow-y-auto border-t border-line p-4 scheme-dark sm:px-5 lg:max-h-none">
+            {commentsData?.data.data.comments.length === 0 ? (
+              <CommentsEmpty />
+            ) : (
+              <div className="space-y-4">
+                {commentsData?.data.data.comments.map(
+                  (comment: CommentType) => (
+                    <Comment postId={id!} comment={comment} key={comment._id} />
+                  ),
+                )}
+              </div>
+            )}
           </div>
 
           {/* Composer — pinned to the bottom */}
@@ -228,6 +276,10 @@ export default function PostDetails() {
           likesCount={likesCount}
           onClose={() => setLikesOpen(false)}
         />
+      )}
+
+      {editOpen && (
+        <EditPostDialog post={post} onClose={() => setEditOpen(false)} />
       )}
     </main>
   );

@@ -6,7 +6,7 @@ import Login from "./pages/Login/Login";
 import Profile from "./pages/Profile/Profile";
 import NotFound from "./pages/NotFound/NotFound";
 import AppToaster from "./AppToaster/AppToaster";
-import AuthContextProvider from "./context/AuthContextProvider";
+import AuthContextProvider from "./Context/AuthContextProvider";
 import Protected from "./components/ProtectedRoutes/Protected";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import PostDetails from "./pages/PostDetails/PostDetails";

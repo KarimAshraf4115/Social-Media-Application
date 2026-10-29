@@ -1,13 +1,8 @@
 import { useContext } from "react";
-import {
-  FiFeather,
-  FiGithub,
-  FiInstagram,
-  FiLinkedin,
-} from "react-icons/fi";
+import { FiFeather, FiGithub, FiInstagram, FiLinkedin } from "react-icons/fi";
 import { FaXTwitter } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../Context/AuthContext";
 
 const colTitle = "text-xs font-medium uppercase tracking-[0.2em] text-sage";
 const colLink = "text-sm text-mute transition hover:text-clay";
@@ -38,8 +33,16 @@ export default function Footer() {
 
           {/* Explore */}
           <div>
-            {userLoggedIn? <><h3 className={colTitle}>Explore</h3></> : <><h3 className={colTitle}>Join Us</h3></>}
-            
+            {userLoggedIn ? (
+              <>
+                <h3 className={colTitle}>Explore</h3>
+              </>
+            ) : (
+              <>
+                <h3 className={colTitle}>Join Us</h3>
+              </>
+            )}
+
             <ul className="mt-4 space-y-3">
               {userLoggedIn ? (
                 <>
@@ -109,7 +112,7 @@ export default function Footer() {
               <FiGithub />
             </a>
             <a href="#" aria-label="Twitter" className={socialBtn}>
-              <FaXTwitter  />
+              <FaXTwitter />
             </a>
             <a href="#" aria-label="LinkedIn" className={socialBtn}>
               <FiLinkedin />

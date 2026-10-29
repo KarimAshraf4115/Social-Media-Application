@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Post from "../../components/Post/Post";
 import PostCreation from "../../components/Post/PostCreation";
-import type { PostType } from "../../types/Post.Type";
+import type { PostType } from "../../Types/Post.Type";
 import HomeError from "./HomeError";
 import HomeSkeleton from "./HomeSkeleton";
 import { Helmet } from "react-helmet";

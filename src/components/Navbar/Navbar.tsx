@@ -12,7 +12,7 @@ import {
   FiX,
 } from "react-icons/fi";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../Context/AuthContext";
 
 const linkBase =
   "flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium transition";
@@ -153,7 +153,11 @@ export default function Navbar() {
                         <FiKey className="text-mute" /> Change password
                       </Link>
                       <div className="my-2 h-px bg-line" />
-                      <button onClick={() => Logout()} type="button" className={`${menuItem} text-clay`}>
+                      <button
+                        onClick={() => Logout()}
+                        type="button"
+                        className={`${menuItem} text-clay`}
+                      >
                         <FiLogOut /> Log out
                       </button>
                     </div>

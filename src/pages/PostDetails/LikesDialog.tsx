@@ -1,5 +1,5 @@
 import { FiHeart, FiX } from "react-icons/fi";
-import { type LikesUserType } from "../../types/LikesUserType.type";
+import { type LikesUserType } from "../../Types/LikesUserType.type";
 
 type LikesDialogProps = {
   likes: LikesUserType[];
