@@ -10,7 +10,7 @@ const socialBtn =
   "grid size-10 place-items-center rounded-full border border-line bg-raised text-mute transition hover:border-clay hover:text-clay";
 
 export default function Footer() {
-  const { userLoggedIn, setUserLoggedIn } = useContext(AuthContext);
+  const { userLoggedIn } = useContext(AuthContext);
   return (
     <footer className="border-t border-line bg-surface">
       <div className="mx-auto max-w-8xl px-4 py-12 sm:px-6">

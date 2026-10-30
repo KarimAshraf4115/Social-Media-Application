@@ -14,7 +14,7 @@ import {
 import {
   RegisterSchema,
   type RegisterSchemaType,
-} from "../../schemas/Auth.schema";
+} from "../../Schemas/Auth.schema";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";

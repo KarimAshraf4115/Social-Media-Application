@@ -6,6 +6,10 @@ export default function PostDetailsError({
   title = "This post wandered off",
   message = "We couldn't load this post. It may have been removed, or your connection dropped.",
   onRetry,
+}: {
+  title?: string;
+  message?: string;
+  onRetry: () => void;
 }) {
   return (
     <main className="mx-auto w-full max-w-200 px-4 py-6 sm:px-6 sm:py-8 lg:max-w-6xl lg:py-6">
@@ -22,7 +26,7 @@ export default function PostDetailsError({
         </Link>
 
         {/* <div aria-hidden="true" className="pointer-events-none absolute inset-6 grid gap-6 opacity-10 lg:grid-cols-[1.15fr_1fr]"> */}
-          {/* <div className="rounded-2xl bg-sage" />
+        {/* <div className="rounded-2xl bg-sage" />
           <div className="hidden space-y-3 lg:block">
             <div className="h-3 w-1/2 rounded-full bg-sage" />
             <div className="h-3 w-3/4 rounded-full bg-sage" />

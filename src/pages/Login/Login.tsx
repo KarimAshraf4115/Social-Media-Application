@@ -6,7 +6,7 @@ import {
   FiMail,
 } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
-import { LoginSchema, type LoginSchemaType } from "../../schemas/Auth.schema";
+import { LoginSchema, type LoginSchemaType } from "../../Schemas/Auth.schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext, useState } from "react";
@@ -28,7 +28,7 @@ export default function Login() {
   });
 
   const [isLoading, setisLoading] = useState(false);
-  const { userLoggedIn, setUserLoggedIn } = useContext(AuthContext);
+  const { setUserLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
   function handleLogin(obj: LoginSchemaType) {
