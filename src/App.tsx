@@ -12,7 +12,14 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import PostDetails from "./pages/PostDetails/PostDetails";
 import useNetworkState from "./../node_modules/react-use/esm/useNetworkState";
 import Offline from "./Offline/Offline";
+import { useContext } from "react";
+import { AuthContext } from "./Context/AuthContext";
+import Landing from "./pages/Landing/Landing";
 const queryClient = new QueryClient();
+function HomeOrLanding() {
+  const { userLoggedIn } = useContext(AuthContext);
+  return userLoggedIn ? <Home /> : <Landing />;
+}
 const routes = createBrowserRouter([
   {
     path: "",
@@ -20,12 +27,7 @@ const routes = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          <Protected>
-            {" "}
-            <Home />{" "}
-          </Protected>
-        ),
+        element: <HomeOrLanding />,
       },
       {
         path: "home",
