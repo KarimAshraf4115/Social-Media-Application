@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../../Context/AuthContext";
@@ -7,9 +7,13 @@ import type { ProfileType } from "../../Types/Profile.Type";
 import ProfileContent from "./ProfileContent";
 import ProfileError from "./ProfileError";
 import ProfileSkeleton from "./ProfileSkeleton";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const { userId } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   function getMyProfile() {
     return axios.get(`https://route-posts.routemisr.com/users/profile-data`, {
@@ -46,6 +50,18 @@ export default function Profile() {
     );
   }
 
+  function uploadPhoto(formData: FormData) {
+    return axios.put(
+      `https://route-posts.routemisr.com/users/upload-photo`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+        },
+      },
+    );
+  }
+
   const {
     data: returnedProfileData,
     isLoading: loadingProfile,
@@ -66,14 +82,35 @@ export default function Profile() {
     queryFn: getProfilePosts,
   });
 
-  const {
-    mutate: passwordMutate,
-    isPending: passwordPending,
-    isError: passwordError,
-  } = useMutation({
-    mutationKey: ["updaPassword"],
+  const { mutate: passwordMutate, isPending: passwordPending } = useMutation({
     mutationFn: updatePassword,
+    onSuccess: (res) => {
+      toast.success(res.data.message);
+      navigate("/login");
+    },
+    onError: (err) =>
+      toast.error(
+        axios.isAxiosError(err)
+          ? err.response?.data.message
+          : "Failed to change password",
+      ),
   });
+
+  const { mutate: photoMutate, isPending: photoPending } = useMutation({
+    mutationFn: uploadPhoto,
+    onSuccess: (res) => {
+      toast.success(res.data.message);
+      queryClient.invalidateQueries({ queryKey: ["getMyProfile"] });
+      queryClient.invalidateQueries({ queryKey: ["getProfilePosts"] });
+      queryClient.invalidateQueries({ queryKey: ["getAllPosts"] });
+    },
+    onError: () => toast.error("Failed to upload photo"),
+  });
+  function handlePhotoChange(file: File) {
+    const formData = new FormData();
+    formData.append("photo", file); // key name = photo
+    photoMutate(formData);
+  }
 
   const profileData: ProfileType = returnedProfileData?.data.data.user;
   const profilePosts: PostType[] = returnedProfilePosts?.data.data.posts;
@@ -92,8 +129,12 @@ export default function Profile() {
     <ProfileContent
       user={profileData}
       posts={profilePosts}
-      onChangePassword={() => {}}
-      onPhotoChange={() => {}}
+      onChangePassword={(data, onDone) =>
+        passwordMutate(data, { onSuccess: onDone })
+      }
+      isPasswordPending={passwordPending}
+      onPhotoChange={handlePhotoChange}
+      photoPending={photoPending}
       onCoverChange={() => {}}
     />
   );

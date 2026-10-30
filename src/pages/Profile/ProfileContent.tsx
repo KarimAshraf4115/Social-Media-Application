@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   FiCalendar,
   FiEdit2,
@@ -14,14 +14,19 @@ import ProfilePhotoViewer from "./ProfilePhotoViewer";
 import ProfilePosts from "./ProfilePosts";
 import type { PostType } from "../../Types/Post.Type";
 import Post from "../../components/Post/Post";
+import ChangePasswordModal, {
+  type ChangePasswordForm,
+} from "./ChangePasswordModal";
 
 type ProfileContentProps = {
   user: ProfileType;
   posts: PostType[];
   onEditProfile?: () => void;
-  onChangePassword?: () => void;
+  onChangePassword?: (data: ChangePasswordForm, onDone: () => void) => void;
+  isPasswordPending?: boolean;
   onCoverChange?: (file: File) => void;
   onPhotoChange?: (file: File) => void;
+  photoPending: boolean;
 };
 
 const formatDate = (iso: string, withDay = false) =>
@@ -39,11 +44,14 @@ export default function ProfileContent({
   posts,
   onEditProfile,
   onChangePassword,
+  isPasswordPending,
   onCoverChange,
   onPhotoChange,
+  photoPending,
 }: ProfileContentProps) {
   const [photoDialog, setPhotoDialog] = useState<"menu" | "view" | null>(null);
-
+  const [passwordOpen, setPasswordOpen] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const stats = [
     { label: "Followers", value: user.followersCount },
     { label: "Following", value: user.followingCount },
@@ -123,7 +131,7 @@ export default function ProfileContent({
             <div className="flex flex-wrap gap-2 pb-1.5">
               <button
                 type="button"
-                onClick={onChangePassword}
+                onClick={() => setPasswordOpen(true)}
                 className="flex items-center gap-2 rounded-2xl border border-line px-3.5 py-2 text-sm font-medium text-ink transition hover:bg-raised"
               >
                 <FiLock className="size-4" /> Change password
@@ -181,10 +189,12 @@ export default function ProfileContent({
 
       {/* Hidden input for the profile picture — the menu's "Edit" row is a label for it */}
       <input
+        ref={photoInputRef}
         id="profile-photo"
         type="file"
         accept="image/*"
         className="sr-only"
+        disabled={photoPending}
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) onPhotoChange?.(file);
@@ -197,7 +207,10 @@ export default function ProfileContent({
           photo={user.photo}
           name={user.name}
           onView={() => setPhotoDialog("view")}
-          onEditDone={() => setPhotoDialog(null)}
+          onEdit={() => {
+            photoInputRef.current?.click(); 
+            setPhotoDialog(null);
+          }}
           onClose={() => setPhotoDialog(null)}
         />
       )}
@@ -206,6 +219,16 @@ export default function ProfileContent({
           photo={user.photo}
           name={user.name}
           onClose={() => setPhotoDialog(null)}
+        />
+      )}
+
+      {passwordOpen && (
+        <ChangePasswordModal
+          isPending={isPasswordPending}
+          onClose={() => setPasswordOpen(false)}
+          onSubmit={(data) =>
+            onChangePassword?.(data, () => setPasswordOpen(false))
+          }
         />
       )}
     </main>
