@@ -12,9 +12,12 @@ import { type ProfileType } from "../../Types/Profile.Type";
 import ProfilePhotoMenu from "./ProfilePhotoMenu";
 import ProfilePhotoViewer from "./ProfilePhotoViewer";
 import ProfilePosts from "./ProfilePosts";
+import type { PostType } from "../../Types/Post.Type";
+import Post from "../../components/Post/Post";
 
 type ProfileContentProps = {
   user: ProfileType;
+  posts: PostType[];
   onEditProfile?: () => void;
   onChangePassword?: () => void;
   onCoverChange?: (file: File) => void;
@@ -33,11 +36,11 @@ const iconBlob =
 
 export default function ProfileContent({
   user,
+  posts,
   onEditProfile,
   onChangePassword,
   onCoverChange,
   onPhotoChange,
-  
 }: ProfileContentProps) {
   const [photoDialog, setPhotoDialog] = useState<"menu" | "view" | null>(null);
 
@@ -169,7 +172,11 @@ export default function ProfileContent({
         </aside>
 
         {/* Posts / Bookmarks */}
-            <ProfilePosts />
+        <ProfilePosts>
+          {posts.map((post) => (
+            <Post post={post} refetchFn={["getProfilePosts"]} />
+          ))}
+        </ProfilePosts>
       </div>
 
       {/* Hidden input for the profile picture — the menu's "Edit" row is a label for it */}
