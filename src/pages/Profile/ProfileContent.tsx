@@ -1,8 +1,7 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import {
   FiCalendar,
   FiEdit2,
-  FiFeather,
   FiLock,
   FiMail,
   FiUpload,
@@ -12,6 +11,7 @@ import { LuCake } from "react-icons/lu";
 import { type ProfileType } from "../../Types/Profile.Type";
 import ProfilePhotoMenu from "./ProfilePhotoMenu";
 import ProfilePhotoViewer from "./ProfilePhotoViewer";
+import ProfilePosts from "./ProfilePosts";
 
 type ProfileContentProps = {
   user: ProfileType;
@@ -19,7 +19,6 @@ type ProfileContentProps = {
   onChangePassword?: () => void;
   onCoverChange?: (file: File) => void;
   onPhotoChange?: (file: File) => void;
-  children?: ReactNode; // posts list, rendered inside the Posts tab
 };
 
 const formatDate = (iso: string, withDay = false) =>
@@ -38,10 +37,9 @@ export default function ProfileContent({
   onChangePassword,
   onCoverChange,
   onPhotoChange,
-  children,
+  
 }: ProfileContentProps) {
   const [photoDialog, setPhotoDialog] = useState<"menu" | "view" | null>(null);
-  const [tab, setTab] = useState<"posts" | "bookmarks">("posts");
 
   const stats = [
     { label: "Followers", value: user.followersCount },
@@ -81,7 +79,7 @@ export default function ProfileContent({
           ) : (
             <>
               <div className="absolute -top-10 right-8 size-32 rounded-[48%_52%_45%_55%] bg-clay/20" />
-              <div className="absolute bottom-[-1.5rem] right-36 size-20 rounded-[55%_45%_52%_48%] bg-sage/20" />
+              <div className="absolute -bottom-6 right-36 size-20 rounded-[55%_45%_52%_48%] bg-sage/20" />
             </>
           )}
           <label
@@ -171,44 +169,7 @@ export default function ProfileContent({
         </aside>
 
         {/* Posts / Bookmarks */}
-        <section className="overflow-hidden rounded-3xl border border-line bg-surface">
-          <div role="tablist" className="flex gap-1 border-b border-line p-2">
-            {(["posts", "bookmarks"] as const).map((t) => (
-              <button
-                key={t}
-                type="button"
-                role="tab"
-                aria-selected={tab === t}
-                onClick={() => setTab(t)}
-                className={`rounded-2xl px-3.5 py-1.5 text-sm font-medium capitalize transition ${
-                  tab === t
-                    ? "bg-canvas text-ink"
-                    : "text-mute hover:bg-raised hover:text-ink"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
-
-          {tab === "posts" && children ? (
-            <div className="space-y-4 p-4">{children}</div>
-          ) : (
-            <div className="px-6 py-10 text-center">
-              <div className="mx-auto grid size-14 place-items-center rounded-[48%_52%_45%_55%] bg-sage/20 text-sage">
-                <FiFeather className="size-6" />
-              </div>
-              <p className="mt-4 text-sm font-medium text-ink">
-                {tab === "posts" ? "No posts yet" : "No bookmarks yet"}
-              </p>
-              <p className="mt-1 text-sm text-mute">
-                {tab === "posts"
-                  ? "Posts you share will show up here."
-                  : "Posts you save will show up here."}
-              </p>
-            </div>
-          )}
-        </section>
+            <ProfilePosts />
       </div>
 
       {/* Hidden input for the profile picture — the menu's "Edit" row is a label for it */}

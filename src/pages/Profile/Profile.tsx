@@ -14,15 +14,24 @@ export default function Profile() {
     });
   }
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  
+
+  const {
+    data,
+    isLoading: loadingProfile,
+    isError: errorProfile,
+    refetch: refetchProfile,
+  } = useQuery({
     queryKey: ["getMyProfile"],
     queryFn: getMyProfile,
   });
 
   const profileData: ProfileType = data?.data.data.user;
 
-  if (isLoading) return <ProfileSkeleton />;
-  if (isError) return <ProfileError onRetry={refetch} />;
+  console.log(profileData);
+
+  if (loadingProfile) return <ProfileSkeleton />;
+  if (errorProfile) return <ProfileError onRetry={refetchProfile} />;
   return (
     <ProfileContent
       user={profileData}

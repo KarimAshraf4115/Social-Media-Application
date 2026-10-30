@@ -25,7 +25,6 @@ export default function Home() {
     // gcTime : 1000,
     // enabled : true
   });
-
   if (isLoading) {
     return (
       <>
